@@ -16,8 +16,6 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 			sum += val.get();
 		}
 		result.set(sum);
-		if (result.get() > 100) {
-			context.write(key, result);
-		}
+		context.write(key, result);
 	}
 }

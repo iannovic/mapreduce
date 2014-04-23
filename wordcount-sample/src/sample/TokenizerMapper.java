@@ -19,13 +19,26 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 		while (itr.hasMoreTokens()) {
 			word.set(itr.nextToken());
 			String s = word.toString();
-			if (!s.matches("[0-9]")) {
-				s = s.replaceAll("[^A-Za-z']","").toLowerCase().trim();	
-				if (!s.isEmpty()) {
-					word.set(s);
-					context.write(word, one);
+			if (s.matches("[A-Za-z'@#]+$")) {
+				boolean keepLooping = true;
+				while (keepLooping) {
+					if (itr.hasMoreTokens()) {
+						String d = itr.nextToken();
+						if (d.matches("[0-9]+$")) {
+							while (d.length() < 7) {
+								d = '0' + d;
+							}
+							d = d + " " + s;
+							word.set(d);
+							keepLooping = false;
+						}
+					} else {
+						keepLooping = false;
+					}
 				}
+				context.write(word, one);
 			}
+
 		}
 	}
 }
