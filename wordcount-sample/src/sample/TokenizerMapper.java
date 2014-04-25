@@ -6,12 +6,11 @@ import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.retry.RetryPolicies.MultipleLinearRandomRetry.Pair;
 import org.apache.hadoop.mapreduce.Mapper;
 
+public class TokenizerMapper extends Mapper<Object, Text, TextPair, IntWritable>{
 
-
-
-public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 
 	private final static IntWritable one = new IntWritable(1);
 	private Text word = new Text();
@@ -98,9 +97,11 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 		for(int i = 0; i < wordList.size() - 1; i++){
 			for(int j = 0; j < wordList.size() - 1; j++){
 				if(!(i==j) && wordList.get(i) != null && wordList.get(j) != null && wordList.get(i) != "" && wordList.get(j) != ""){
-					word.set(wordList.get(i) + "-" + wordList.get(j));
+					String first = wordList.get(i);
+					String second = wordList.get(j);
 					try {
-						context.write(word, one);
+						context.write(new TextPair(first,second), one);
+						context.write(new TextPair(first,"*"), one);
 					} catch (IOException | InterruptedException e) {
 						e.printStackTrace();
 					}
