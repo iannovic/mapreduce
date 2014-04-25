@@ -12,11 +12,14 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 
 	public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 		int sum = 0;
+		String tweet = key.toString();
 		for (IntWritable val : values) {
 			sum += val.get();
 		}
 		result.set(sum);
-		if (result.get() > 100) {
+		char first = tweet.charAt(0);
+		char end = tweet.charAt(tweet.length()-1);
+		if (result.get() > 100 && !(end=='-') && !(first=='-')) {
 			context.write(key, result);
 		}
 	}
