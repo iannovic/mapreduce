@@ -10,8 +10,6 @@ import org.apache.hadoop.io.retry.RetryPolicies.MultipleLinearRandomRetry.Pair;
 import org.apache.hadoop.mapreduce.Mapper;
 
 public class TokenizerMapper extends Mapper<Object, Text, TextPair, IntWritable>{
-
-
 	private final static IntWritable one = new IntWritable(1);
 	private Text word = new Text();
 	private final int WORD = 0;
