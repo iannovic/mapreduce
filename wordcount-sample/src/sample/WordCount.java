@@ -30,10 +30,9 @@ public class WordCount {
 		/* FileOutputFormat wants to create the output directory itself.
 		 * If it exists, delete it:
 		 */
-		deleteFolder(conf,outputPath);
 		
 		Job job = Job.getInstance(conf);
-
+		job.setPartitionerClass(PairPartitioner.class);
 		job.setJarByClass(WordCount.class);
 		job.setMapperClass(TokenizerMapper.class);
 		job.setCombinerClass(IntSumReducer.class);
