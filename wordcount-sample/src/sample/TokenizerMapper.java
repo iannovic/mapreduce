@@ -9,7 +9,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.retry.RetryPolicies.MultipleLinearRandomRetry.Pair;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class TokenizerMapper extends Mapper<Object, Text, TextPair, IntWritable>{
+public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 	private final static IntWritable one = new IntWritable(1);
 	private Text word = new Text();
 	private final int WORD = 0;
@@ -98,8 +98,10 @@ public class TokenizerMapper extends Mapper<Object, Text, TextPair, IntWritable>
 					String first = wordList.get(i);
 					String second = wordList.get(j);
 					try {
-						context.write(new TextPair(first,second), one);
-						context.write(new TextPair(first,"*"), one);
+						word.set(first + "-" + second);
+						context.write(word, one);
+						word.set(first + "-*");
+						context.write(word, one);
 					} catch (IOException | InterruptedException e) {
 						e.printStackTrace();
 					}

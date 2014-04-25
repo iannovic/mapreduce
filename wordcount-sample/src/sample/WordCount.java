@@ -33,7 +33,7 @@ public class WordCount {
 		
 		Job job = Job.getInstance(conf);
 		job.setPartitionerClass(PairPartitioner.class);
-		job.setJarByClass(WordCount.class);
+		job.setJarByClass(Text.class);
 		job.setMapperClass(TokenizerMapper.class);
 		job.setCombinerClass(IntSumReducer.class);
 		job.setReducerClass(IntSumReducer.class);
