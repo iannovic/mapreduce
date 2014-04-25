@@ -18,7 +18,7 @@ public class WordCount {
 	private static final transient Logger LOG = LoggerFactory.getLogger(WordCount.class);
 
 	public static void main(String[] args) throws Exception {
-		
+
 		Configuration conf = new Configuration();		
 
 		LOG.info("HDFS Root Path: {}", conf.get("fs.defaultFS"));
@@ -30,9 +30,10 @@ public class WordCount {
 		/* FileOutputFormat wants to create the output directory itself.
 		 * If it exists, delete it:
 		 */
-		
+		deleteFolder(conf,outputPath);
+
 		Job job = Job.getInstance(conf);
-		job.setPartitionerClass(PairPartitioner.class);
+
 		job.setJarByClass(WordCount.class);
 		job.setMapperClass(TokenizerMapper.class);
 		job.setCombinerClass(IntSumReducer.class);
@@ -43,7 +44,7 @@ public class WordCount {
 		FileOutputFormat.setOutputPath(job, new Path(outputPath));
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
-	
+
 	/**
 	 * Delete a folder on the HDFS. This is an example of how to interact
 	 * with the HDFS using the Java API. You can also interact with it
