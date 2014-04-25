@@ -31,6 +31,8 @@ public class WordCount {
 		 * If it exists, delete it:
 		 */
 		
+		deleteFolder(conf,outputPath);
+		
 		Job job = Job.getInstance(conf);
 		job.setPartitionerClass(PairPartitioner.class);
 		job.setJarByClass(Text.class);

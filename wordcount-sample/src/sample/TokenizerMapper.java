@@ -6,7 +6,6 @@ import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.retry.RetryPolicies.MultipleLinearRandomRetry.Pair;
 import org.apache.hadoop.mapreduce.Mapper;
 
 public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{

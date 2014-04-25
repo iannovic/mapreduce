@@ -19,7 +19,7 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 		result.set(sum);
 		char first = tweet.charAt(0);
 		char end = tweet.charAt(tweet.length()-1);
-		if (result.get() > 100 && !(end=='-') && !(first=='-')) {
+		if (!(end=='-') && !(first=='-')) {
 			context.write(key, result);
 		}
 	}
