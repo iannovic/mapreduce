@@ -1,7 +1,6 @@
 package sample;
 
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Partitioner;
 
 public class PairPartitioner extends Partitioner<TextPair, Text>{
