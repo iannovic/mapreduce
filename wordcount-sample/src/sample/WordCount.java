@@ -36,9 +36,10 @@ public class WordCount {
 		Job job = Job.getInstance(conf);
 		job.setPartitionerClass(PairPartitioner.class);
 		job.setJarByClass(Text.class);
-		job.setMapperClass(TokenizerMapper.class);
-		job.setCombinerClass(IntSumReducer.class);
-		job.setReducerClass(IntSumReducer.class);
+		job.setSortComparatorClass(PairsComparator.class);
+		job.setMapperClass(PairsMapper.class);
+		//job.setCombinerClass(PairsReducer.class);
+		job.setReducerClass(PairsReducer.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 		FileInputFormat.addInputPath(job, new Path(inputPath));

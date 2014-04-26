@@ -8,7 +8,7 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
+public class PairsMapper extends Mapper<Object, Text, Text, IntWritable>{
 	private final static IntWritable one = new IntWritable(1);
 	private Text word = new Text();
 	private final int WORD = 0;
@@ -16,7 +16,7 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 	private final int MENTION =2;
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		StringTokenizer itr = new StringTokenizer(value.toString());
-		int mode = 0;
+		int mode = HASH;
 		ArrayList<String> wordList = new ArrayList<String>();
 		int c = 0;
 		whileLoop:
@@ -45,7 +45,11 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 				case(2):
 					if(s.contains("0") || s.contains("1") || s.contains("2") || s.contains("3")){
 						c = 0;
-						for(int i = 0; i < 2; i++){wordList.remove(wordList.size() - 1);}
+							for(int i = 0; i < 2; i++){
+								if ((wordList.size()) >= 1) {
+									wordList.remove(wordList.size() - 1);
+								}
+							}
 						for(int i = 0; i < 5; i++){
 							if(itr.hasMoreTokens()){
 								itr.nextToken();
@@ -74,6 +78,7 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 				break;
 				case(HASH):
 					if (s.charAt(0) == '#'){
+						s = s.replaceAll("[#]", "");
 						wordList.add(s);
 					}
 					break;
