@@ -37,16 +37,16 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 					if(cur =='{'){
 						pKey = pKey.replaceAll("[-0-9.:;\n\t\r=#@, +?/!{}%$&)(\"]*", "").toLowerCase().trim();
 						pKeyFound = true;
-						key.set(sKey);
-						context.write(key, result);
+						//key.set(sKey);
+						//context.write(key, result);
 					}
 					else{
 						pKey = pKey + cur;	
 					}
 				}
 				else if(sKeyFound == false){
-					key.set(sKey);
-					context.write(key, result);
+					//key.set(sKey);
+					//context.write(key, result);
 					if(cur == '='){
 						sKeyFound = true;
 						//key.set(sKey);
