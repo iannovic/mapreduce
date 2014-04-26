@@ -2,6 +2,7 @@ package sample;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.IntWritable;
@@ -13,8 +14,9 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 
-	private final static IntWritable one = new IntWritable(1);
+	private final static IntWritable one = new IntWritable(0);
 	private Text word = new Text();
+	//private Text one = new Text();
 	private final int WORD = 0;
 	private final int HASH = 1;
 	private final int MENTION =2;
@@ -72,7 +74,7 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 				case(WORD):
 					if (s.charAt(0) == '@' || s.charAt(0) == '#' || s.contains("http")) {
 					} else {
-						s = s.replaceAll("[-0-9.:;\n\t\r#@, +?/!$&)(\"]*", "").toLowerCase().trim();	
+						s = s.replaceAll("[-0-9.:;\n\t\r=#@, +?/!{}%$&)(\"]*", "").toLowerCase().trim();	
 						if(s != "" && s != null){wordList.add(s);}
 					}
 				break;
@@ -96,15 +98,23 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 	private void write(ArrayList<String> wordList, Context context) {
 		
 		for(int i = 0; i < wordList.size() - 1; i++){
+			HashMap<String, Integer> map = new HashMap<String, Integer>();
+			String cur = wordList.get(i);
 			for(int j = 0; j < wordList.size() - 1; j++){
 				if(!(i==j) && wordList.get(i) != null && wordList.get(j) != null && wordList.get(i) != "" && wordList.get(j) != ""){
-					word.set(wordList.get(i) + "-" + wordList.get(j));
-					try {
-						context.write(word, one);
-					} catch (IOException | InterruptedException e) {
-						e.printStackTrace();
-					}
+					//word.set(wordList.get(i) + "-" + wordList.get(j));
+					if(map.containsKey(wordList.get(j))){
+						map.put(wordList.get(j), map.get(wordList.get(j)) + 1);
+					}else{map.put(wordList.get(j), 1);}
 				}
+
+			}
+			word.set(cur + map.toString());
+			//one.set(map.toString());
+			try {
+				context.write(word, one);
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
