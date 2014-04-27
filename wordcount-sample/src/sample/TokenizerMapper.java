@@ -3,6 +3,7 @@ package sample;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.IntWritable;
@@ -14,15 +15,14 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 
-	private final static IntWritable one = new IntWritable(0);
+	private final static IntWritable one = new IntWritable(1);
 	private Text word = new Text();
-	//private Text one = new Text();
 	private final int WORD = 0;
 	private final int HASH = 1;
 	private final int MENTION =2;
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		StringTokenizer itr = new StringTokenizer(value.toString());
-		int mode = 0;
+		int mode = HASH;
 		ArrayList<String> wordList = new ArrayList<String>();
 		int c = 0;
 		whileLoop:
@@ -51,7 +51,11 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 				case(2):
 					if(s.contains("0") || s.contains("1") || s.contains("2") || s.contains("3")){
 						c = 0;
-						for(int i = 0; i < 2; i++){wordList.remove(wordList.size() - 1);}
+						for(int i = 0; i < 2; i++){
+								if (i < wordList.size()) {
+									wordList.remove(wordList.size() - 1);
+								}
+							}
 						for(int i = 0; i < 5; i++){
 							if(itr.hasMoreTokens()){
 								itr.nextToken();
@@ -80,6 +84,7 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 				break;
 				case(HASH):
 					if (s.charAt(0) == '#'){
+						s = s.replaceAll("[#]", "");
 						wordList.add(s);
 					}
 					break;
@@ -96,25 +101,23 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 	}
 	
 	private void write(ArrayList<String> wordList, Context context) {
+		if (wordList.size() > 1) {
+			for(int i = 0; i < wordList.size() - 1; i++){
+				LinkedList<String> map = new LinkedList<String>();
+				String cur = wordList.get(i);
+				for(int j = 0; j < wordList.size() - 1; j++){
+					String s = wordList.get(j);
+					if(!(i==j) && cur != null && s != null && !cur.equals("") && !s.equals("")){
+						map.add(s);
+					}
 		
-		for(int i = 0; i < wordList.size() - 1; i++){
-			HashMap<String, Integer> map = new HashMap<String, Integer>();
-			String cur = wordList.get(i);
-			for(int j = 0; j < wordList.size() - 1; j++){
-				if(!(i==j) && wordList.get(i) != null && wordList.get(j) != null && wordList.get(i) != "" && wordList.get(j) != ""){
-					//word.set(wordList.get(i) + "-" + wordList.get(j));
-					if(map.containsKey(wordList.get(j))){
-						map.put(wordList.get(j), map.get(wordList.get(j)) + 1);
-					}else{map.put(wordList.get(j), 1);}
 				}
-
-			}
-			word.set(cur + map.toString());
-			//one.set(map.toString());
-			try {
-				context.write(word, one);
-			} catch (IOException | InterruptedException e) {
+				word.set(cur + map.toString());
+				try {
+					context.write(word, one);
+				} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
+				}
 			}
 		}
 	}

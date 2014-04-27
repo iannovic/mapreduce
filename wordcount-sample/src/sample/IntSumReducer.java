@@ -28,7 +28,7 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 		char cur = ' ';
 		
 		//testing
-		//context.write(key, result);
+		context.write(key, result);
 		for(int i = 0; i < s.length; i++){
 			cur = s[i];
 			//find key
