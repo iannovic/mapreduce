@@ -37,6 +37,7 @@ public class WordCount {
 		job.setJarByClass(WordCount.class);
 		job.setMapperClass(TokenizerMapper.class);
 		job.setCombinerClass(StripesReducer.class);
+		job.setPartitionerClass(StripesPartitioner.class);
 		job.setReducerClass(StripesReducer.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
