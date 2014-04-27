@@ -23,9 +23,9 @@ extends Reducer<Text,IntWritable,Text,DoubleWritable> {
 		String splitKeys[] = keys.split("[,]");
 		int size = splitKeys.length;
 		
-		//word.set(keys.trim());
-		//result.set(1);
-		//context.write(word,result);
+		word.set(keys.trim());
+		result.set(1);
+		context.write(word,result);
 		
 		for (int i = 0; i < size-1; i ++) {
 			if (i==0 && size > 0) {
