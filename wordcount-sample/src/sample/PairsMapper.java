@@ -96,11 +96,11 @@ public class PairsMapper extends Mapper<Object, Text, Text, IntWritable>{
 	
 	private void write(ArrayList<String> wordList, Context context) {
 		
-		for(int i = 0; i < wordList.size() - 1; i++){
-			for(int j = 0; j < wordList.size() - 1; j++){
-				if(!(i==j) && wordList.get(i) != null && wordList.get(j) != null && wordList.get(i) != "" && wordList.get(j) != ""){
-					String first = wordList.get(i);
-					String second = wordList.get(j);
+		for(int i = 0; i < wordList.size(); i++){
+			String first = wordList.get(i);
+			for(int j = 0; j < wordList.size(); j++){
+				String second = wordList.get(j);
+				if(!(i==j) && first != null && second != null && !first.equals("") && !second.equals("")){
 					try {
 						word.set(first + "-" + second);
 						context.write(word, one);
