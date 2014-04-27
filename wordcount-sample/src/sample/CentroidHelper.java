@@ -8,7 +8,8 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 
 public class CentroidHelper {
 
-	private int k_centroids = 20;
+	//this value right here controls the number of iterations of centroids for the algorithm
+	private int k_centroids = 5;
 	
 	/*********************************METHOD TO READ FROM THE FILE**************************************/
 	public LinkedList<Data> populateCentroids() throws IOException{
@@ -47,22 +48,23 @@ public class CentroidHelper {
 			}	
 			writeToFile(ret);
 		}
+		System.out.println("inside populateCentroids:" + ret.size());
 		return ret;
 	}
 	
 	/*********************************METHOD TO WRITE TO THE FILE**************************************/
 	public void writeToFile(LinkedList<Data> centroid_list) {
-		String fileString = new String();
+		String fileString = "";
 		try {
 			FSDataOutputStream outStream = Global.fs.create(Global.p);
 			for (int i = 0; i < centroid_list.size(); i++) {
 				Data d = centroid_list.get(i);
 				fileString = fileString + Integer.toString(d.getCluster_id()) 
-						+ ":" + Double.toString(d.getXval()) 
-						+ "," + Double.toString(d.getYval()) 
+						+ ":" + Double.toString(Math.round(d.getXval())) 
+						+ "," + Double.toString(Math.round(d.getYval())) 
 						+ ',' + Integer.toString(d.getCount()/2) + ";";
 			}
-			fileString.replaceAll("\\[^a-zA-Z0-9:.,]", "");
+			//fileString.replaceAll("\\[^a-zA-Z0-9:.,]", "");
 			outStream.writeUTF(fileString);
 			outStream.close();
 		} catch (IOException e1) {

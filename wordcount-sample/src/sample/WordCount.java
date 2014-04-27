@@ -38,13 +38,16 @@ public class WordCount {
 		 */
 		
 		//n determines the number of iterations for mapreduce kmeans
-		int n = 2;
+		int n = 1;
 		
 		FileSystem fs = FileSystem.get(conf);
 		Path p = new Path("/data/centroids");
 		CentroidHelper ch = new CentroidHelper();
 		Global.fs = fs;
 		Global.p = p;
+		
+		fs.delete(p, true);
+		deleteFolder(conf,outputPath);
 		
 		for (int i = 0; i < n; i++) {
 			
@@ -57,6 +60,7 @@ public class WordCount {
 			
 			deleteFolder(conf,outputPath);
 			Job job = Job.getInstance(conf);
+			job.setNumReduceTasks(1);
 			job.setJarByClass(WordCount.class);
 			job.setMapperClass(TokenizerMapper.class);
 			job.setCombinerClass(IntSumReducer.class);

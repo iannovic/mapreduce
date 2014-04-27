@@ -16,7 +16,8 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		StringTokenizer itr = new StringTokenizer(value.toString());
-/*****************************GET THE FOLLOWER AND FRIEND COUNT OF THE NEW TWEET*******************************************/
+
+		/*****************************GET THE FOLLOWER AND FRIEND COUNT OF THE NEW TWEET*******************************************/
 		//int index = 0;
 		while (itr.hasMoreTokens()) {
 			word.set(itr.nextToken());
@@ -31,13 +32,13 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 				tweet.setYval(d);
 			}
 		
-/*****************FIND THE DISTANCE TO ALL CENTROIDS AND PICK BEST CENTER*************************************************/
+			/*****************FIND THE DISTANCE TO ALL CENTROIDS AND PICK BEST CENTER*****************************/
 			//read from file into the String "centers"
 			//File Written in the format: "a:xval,yval,coutn;b:xval,yval;c:xval,yval,count;........"
 
 			//Shortest Distance
-			double sd = 100000;
-			double newDistance = 100000;
+			double sd = 1000000000;
+			double newDistance = 1000000000;
 
 			if (Global.centroid_list == null) {
 				Global.centroid_list = centroid_helper.populateCentroids();
@@ -53,7 +54,7 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 				}
 			}
 
-/*************************************EMIT**********************************************************************************/			
+			/*************************EMIT**************************************/			
 			word.set(":" + tweet.getCluster_id() + ":" + tweet.getXval() + ":" + tweet.getYval() + ":");
 			context.write(word, one);
 		}
