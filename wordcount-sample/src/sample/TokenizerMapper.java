@@ -103,15 +103,14 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 		if (wordList.size() > 1) {
 			for(int i = 0; i < wordList.size(); i++){
 				LinkedList<String> map = new LinkedList<String>();
-				String cur = wordList.get(i);
+				String first = wordList.get(i);
 				for(int j = 0; j < wordList.size(); j++){
-					String s = wordList.get(j);
-					if(!(i==j) && cur != null && s != null && !cur.equals("") && !s.equals("")){
-						map.add(s);
+					String second = wordList.get(j);
+					if(!(i==j) && first != null && second != null && !first.equals("") && !second.equals("")){
+						map.add(second);
 					}
-		
 				}
-				word.set(cur + map.toString());
+				word.set(first + map.toString());
 				try {
 					context.write(word, one);
 				} catch (IOException | InterruptedException e) {
