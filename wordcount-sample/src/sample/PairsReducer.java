@@ -10,7 +10,6 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class PairsReducer extends Reducer<Text,IntWritable,Text,DoubleWritable> {
 	
 	private DoubleWritable result = new DoubleWritable();
-	private final String total_flag = "-*";
 	private DoubleWritable total_count = new DoubleWritable();
 	private Text current = new Text("nothing_quite_yet");
 	
@@ -25,7 +24,6 @@ public class PairsReducer extends Reducer<Text,IntWritable,Text,DoubleWritable> 
 				}
 				total_count.set(sum2 + total_count.get());
 			} else {
-				
 				current.set(key.toString());
 				total_count.set(0);
 				int sum2 = 0;
