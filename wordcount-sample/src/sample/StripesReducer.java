@@ -23,18 +23,18 @@ extends Reducer<Text,IntWritable,Text,DoubleWritable> {
 		String splitKeys[] = keys.split("[,]");
 		int size = splitKeys.length;
 		
-		word.set(keys.trim());
-		result.set(1);
-		context.write(word,result);
+		//word.set(keys.trim());
+		//result.set(1);
+		//context.write(word,result);
 		
-		for (int i = 0; i < size-1; i ++) {
+		for (int i = 0; i < size; i ++) {
 			if (i==0 && size > 0) {
 				String s = splitKeys[i].trim().replaceAll("[,]", "");
 				if (!s.equals(current.toString()))	{
 
 					int sum = getMapTotal();
 					total.set(sum);
-					
+		
 					Set<String> key_set = map.keySet();
 					for (String set : key_set) {
 						word.set(current.toString() + "-" + set);
