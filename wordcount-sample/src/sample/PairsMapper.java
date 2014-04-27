@@ -102,6 +102,8 @@ public class PairsMapper extends Mapper<Object, Text, Text, IntWritable>{
 				String second = wordList.get(j);
 				if(!(i==j) && first != null && second != null && !first.equals("") && !second.equals("")){
 					try {
+						first.replaceAll("[,]", "");
+						second.replaceAll("[,]", "");
 						word.set(first + "-" + second);
 						context.write(word, one);
 						word.set(first + "-*");
