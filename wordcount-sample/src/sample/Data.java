@@ -42,4 +42,10 @@ public class Data {
 	public void setDone(boolean done) {
 		this.done = done;
 	}
+	
+	public String toString() {
+		String ret;
+		ret = this.getCluster_id() + ":" + this.getXval() + ":" + this.getYval() + ":" + this.getCount();
+		return ret;
+	}
 }

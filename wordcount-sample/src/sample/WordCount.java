@@ -27,6 +27,7 @@ public class WordCount {
 		
 		/*need this to set the number of reducers to one for k-means*/
 		conf.set("mapred.reduce.tasks","1");
+		conf.set("mapred.tasktracker.map.tasks.maximum", "1");
 		
 		/* Set the Input/Output Paths on HDFS */
 		String inputPath = "/input";
@@ -37,7 +38,7 @@ public class WordCount {
 		 */
 		
 		//n determines the number of iterations for mapreduce kmeans
-		int n = 1;
+		int n = 2;
 		
 		FileSystem fs = FileSystem.get(conf);
 		Path p = new Path("/data/centroids");

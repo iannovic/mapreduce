@@ -8,7 +8,7 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 
 public class CentroidHelper {
 
-	private int k_centroids = 10;
+	private int k_centroids = 20;
 	
 	/*********************************METHOD TO READ FROM THE FILE**************************************/
 	public LinkedList<Data> populateCentroids() throws IOException{
@@ -18,7 +18,7 @@ public class CentroidHelper {
 		if (Global.fs.exists(Global.p)) {
 			FSDataInputStream inStream = Global.fs.open(Global.p);
 			centers = inStream.readUTF();
-			centers.replaceAll("[^0-9.:;,]", "");
+			centers.replaceAll("\\[^a-zA-Z0-9:.,]", "");
 			String center_split[] = centers.split("[;]");
 			for (String s : center_split) {
 				Data data = new Data();
@@ -29,20 +29,20 @@ public class CentroidHelper {
 						if (yet_again[0].matches("[0-9.]+$") && yet_again[1].matches("[0-9.]+$")) {
 							data.setXval(Double.parseDouble(yet_again[0]));
 							data.setYval(Double.parseDouble(yet_again[1]));
-							data.setCount(0);
+							data.setCount(1);
 							ret.add(data);
 						}
 					}		
 				}
-			inStream.close();
+				inStream.close();
 			} else {	
 			//this will be the name in the file
 			for(int i = 0; i < k_centroids; i++){
 				Data d = new Data();
-				d.setXval(i * 100);
-				d.setYval(i * 100);
+				d.setXval(i * 250);
+				d.setYval(i * 250);
 				d.setCluster_id(i);
-				d.setCount(0);
+				d.setCount(1);
 				ret.add(d);
 			}	
 			writeToFile(ret);
@@ -60,8 +60,9 @@ public class CentroidHelper {
 				fileString = fileString + Integer.toString(d.getCluster_id()) 
 						+ ":" + Double.toString(d.getXval()) 
 						+ "," + Double.toString(d.getYval()) 
-						+ ',' + Integer.toString(d.getCount()) + ";";
+						+ ',' + Integer.toString(d.getCount()/2) + ";";
 			}
+			fileString.replaceAll("\\[^a-zA-Z0-9:.,]", "");
 			outStream.writeUTF(fileString);
 			outStream.close();
 		} catch (IOException e1) {

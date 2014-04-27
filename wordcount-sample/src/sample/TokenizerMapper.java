@@ -24,10 +24,12 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 			Data tweet = new Data();
 			String keys[] = s.split("[,;]");
 			
+			if (keys.length == 2) {
 				Double d = Double.parseDouble(keys[0]);
 				tweet.setXval(d);
 				d = Double.parseDouble(keys[1]);
 				tweet.setYval(d);
+			}
 		
 /*****************FIND THE DISTANCE TO ALL CENTROIDS AND PICK BEST CENTER*************************************************/
 			//read from file into the String "centers"
@@ -52,7 +54,7 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 			}
 
 /*************************************EMIT**********************************************************************************/			
-			word.set(":" + tweet.getCluster_id() + ":" + tweet.getXval() + ":" + tweet.getYval());
+			word.set(":" + tweet.getCluster_id() + ":" + tweet.getXval() + ":" + tweet.getYval() + ":");
 			context.write(word, one);
 		}
 

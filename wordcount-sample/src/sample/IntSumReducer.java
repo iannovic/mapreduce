@@ -23,7 +23,6 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 	/*******************************************NEW TWEET********************************************/
 		//variables for new tweet
 		Data tweet = TweetToData(key);
-		
 		/*check to see if the cluster is different from the previous reduce() */
 	/*************************************GET THE RIGHT CENTROID**********************************/
 		//variables for centroid
@@ -32,11 +31,12 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 	/*******************************************DO DA MATH*******************************************/
 		
 
-		center.setXval(center.getXval() * (center.getCount()) + tweet.getXval());
-		center.setYval(center.getYval() * (center.getCount()) + tweet.getYval());
 		center.setCount(center.getCount()+1);
+		center.setXval(center.getXval() * (center.getCount()-1) + tweet.getXval());
+		center.setYval(center.getYval() * (center.getCount()-1) + tweet.getYval());
 		center.setXval(center.getXval()/(center.getCount()));
 		center.setYval(center.getYval()/(center.getCount()));
+		
 	/*****************************************WRITE TO FILE*****************************************/	
 		/*
 		 * We have the old contents of the file stored in the string "centroids"
@@ -52,14 +52,12 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 	
 	public Data TweetToData(Text t) {
 		Data d = new Data();
-		
 		String k = t.toString();
 		String keys[] = k.split("[:]");
-		if (keys.length == 3) {
-			d.setCluster_id(Integer.parseInt(keys[0].trim()));
-			d.setXval(Double.parseDouble(keys[1].trim()));
-			d.setYval(Double.parseDouble(keys[2].trim()));
-		}
+		d.setCluster_id(Integer.parseInt(keys[1].trim()));
+		d.setXval(Double.parseDouble(keys[2].trim()));
+		d.setYval(Double.parseDouble(keys[3].trim()));
+		d.setCount(1);
 		return d;
 	}
 }
