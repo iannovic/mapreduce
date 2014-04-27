@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -36,7 +37,7 @@ public class WordCount {
 
 		job.setJarByClass(WordCount.class);
 		job.setMapperClass(TokenizerMapper.class);
-		job.setCombinerClass(StripesReducer.class);
+		//job.setCombinerClass(StripesReducer.class);
 		job.setPartitionerClass(StripesPartitioner.class);
 		job.setReducerClass(StripesReducer.class);
 		job.setOutputKeyClass(Text.class);
