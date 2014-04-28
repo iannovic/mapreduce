@@ -13,9 +13,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WordCount {
+public class KMeansJob {
 
-	private static final transient Logger LOG = LoggerFactory.getLogger(WordCount.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(KMeansJob.class);
 
 	public static void main(String[] args) throws Exception {
 		
@@ -37,7 +37,7 @@ public class WordCount {
 		 */
 		
 		//n determines the number of iterations for mapreduce kmeans
-		int n = 1;
+		int n = 100;
 		
 		FileSystem fs = FileSystem.get(conf);
 		Path p = new Path("/data/centroids");
@@ -60,10 +60,10 @@ public class WordCount {
 			deleteFolder(conf,outputPath);
 			Job job = Job.getInstance(conf);
 			job.setNumReduceTasks(1);
-			job.setJarByClass(WordCount.class);
-			job.setMapperClass(TokenizerMapper.class);
+			job.setJarByClass(KMeansJob.class);
+			job.setMapperClass(KMeansMapper.class);
 			//job.setCombinerClass(IntSumReducer.class);
-			job.setReducerClass(IntSumReducer.class);
+			job.setReducerClass(KMeansReducer.class);
 			job.setOutputKeyClass(Text.class);
 			job.setOutputValueClass(Data.class);
 			FileInputFormat.addInputPath(job, new Path(inputPath));

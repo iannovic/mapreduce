@@ -5,7 +5,7 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public class IntSumReducer 
+public class KMeansReducer 
 extends Reducer<Text,Data,Text,IntWritable> {
 	private IntWritable result = new IntWritable();
 	public void reduce(Text key, Iterable<Data> values, Context context) throws IOException, InterruptedException {

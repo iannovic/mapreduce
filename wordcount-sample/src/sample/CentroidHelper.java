@@ -9,7 +9,7 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 public class CentroidHelper {
 
 	//this value right here controls the number of iterations of centroids for the algorithm
-	private int k_centroids = 5;
+	private int k_centroids = 40;
 	
 	/*********************************METHOD TO READ FROM THE FILE**************************************/
 	public LinkedList<Data> populateCentroids() throws IOException{
