@@ -31,12 +31,17 @@ public class WordCount {
 		 * If it exists, delete it:
 		 */
 		deleteFolder(conf,outputPath);
-		int n = 10;
+		int n = 30;
 		LinkedList<Node> global = new LinkedList<Node>();
-		GlobalNodes.nodes = global;
-		
+		Global.nodes = global;
+		int last = 0;
 		for (int i = 0; i < n; i ++) {
-			GlobalNodes.has_changed = false;
+			if (Global.is_complete && last <= i) {
+				System.out.println("Job is completed, skipping mapreduce until loop finished...");
+				break;
+			}
+			deleteFolder(conf,outputPath);
+			Global.has_changed = false;
 			Job job = Job.getInstance(conf);
 			job.setJarByClass(WordCount.class);
 			job.setMapperClass(TokenizerMapper.class);
@@ -46,9 +51,20 @@ public class WordCount {
 			FileInputFormat.addInputPath(job, new Path(inputPath));
 			FileOutputFormat.setOutputPath(job, new Path(outputPath));
 			job.waitForCompletion(true);
-			GlobalNodes.is_first_iteration = false;
+			if (i == n-1) {
+				System.out.println("printing your global");
+				for (int j = 0; j < Global.nodes.size(); j++) {
+					System.out.println(Global.nodes.get(j));
+				}
+			}
+			Global.first_iteration = false;
+//			if (Global.has_changed == false) {
+//				Global.is_complete = true;
+//				last = i + 2;
+//			}
+			System.out.println("has_changed :" + Global.has_changed);
 		}
-		System.out.println("has_changed :" + GlobalNodes.has_changed); // false will indicate that it is no longer changing and complete.
+		System.out.println("has_changed :" + Global.has_changed); // false will indicate that it is no longer changing and complete.
 		System.exit(0);
 	}
 	

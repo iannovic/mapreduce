@@ -19,8 +19,7 @@ extends Reducer<Text,Node,Text,IntWritable> {
 		Node m = null;
 		
 		for (Node d : values) {
-			//System.out.println("distance is :" + d.getDistance());
-			
+			System.out.println(d.toString());
 			if (d.isIs_node()) {
 				//System.out.println(key.toString() +" it's a boy!!!!!!!!");
 				m = new Node();
@@ -33,25 +32,26 @@ extends Reducer<Text,Node,Text,IntWritable> {
 				}
 				
 			} else if (d.getDistance() < distanceMin) {
-				//System.out.println(key.toString() + " its a girl :*(");
+			//	System.out.println(d.toString() + " its a girl :*(");
 							distanceMin = d.getDistance();
 				}
 			}
-		
+		//System.out.println(list.toString() + "final choice was:" + distanceMin);
 		if (m != null) {
 			m.setDistance(distanceMin);
 			result.set(m.getDistance());
-			System.err.println("Emiting this node->" + m.toString());
-			
-			if (GlobalNodes.is_first_iteration) {
-				GlobalNodes.nodes.add(m);
-			} else {
-				if (nh.updateGlobalNodes(m)) {
-					GlobalNodes.has_changed = true;
-				}
-			}
 			word.set(m.toString());
 			context.write(word,result);
+			//System.err.println("Emiting this node->" + m.toString());
+			
+			if (Global.first_iteration) {
+				Global.nodes.add(m);
+			} else {
+				if (nh.updateGlobalNodes(m)) {
+					Global.has_changed = true;
+				}
+			}
+			
 		}
 
 

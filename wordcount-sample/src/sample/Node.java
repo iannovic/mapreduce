@@ -18,16 +18,12 @@ public class Node implements Writable{
 		id = arg0.readInt();
 		distance = arg0.readInt();
 		is_node = arg0.readBoolean();
-		String s = arg0.readLine();
-		String ints[] = s.split("[:]");
-		list = new ArrayList<Integer>();
-		for (String i : ints) {
-			i = i.trim();
-			if (!i.equals("") && i.matches("[0-9]+$")) {
-				list.add(Integer.parseInt(i));
-			}
-		}
+		int size = arg0.readInt();
 		
+		list = new ArrayList<Integer>();
+		for (int i = 0; i < size; i ++) {
+			list.add(arg0.readInt());
+		}
 	}
 	public int getDistance() {
 		return distance;
@@ -46,11 +42,10 @@ public class Node implements Writable{
 		arg0.writeInt(id);
 		arg0.writeInt(distance);
 		arg0.writeBoolean(is_node);
-		String s = "";
+		arg0.writeInt(list.size());
 		for (int i = 0; i < list.size();i++) {
-			s = s + list.get(i) + ":";
+			arg0.writeInt(list.get(i));
 		}
-		arg0.writeChars(s);
 	}
 	
 	public int hashCode() {
