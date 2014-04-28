@@ -71,4 +71,7 @@ public class Data implements Writable{
 		arg0.writeDouble(yval);
 		
 	}
+	public int hashCode() {
+		return ((Integer)getCluster_id()).hashCode();
+	}
 }

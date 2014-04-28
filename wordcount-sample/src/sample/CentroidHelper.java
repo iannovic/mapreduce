@@ -62,7 +62,7 @@ public class CentroidHelper {
 				fileString = fileString + Integer.toString(d.getCluster_id()) 
 						+ ":" + Double.toString(Math.round(d.getXval())) 
 						+ "," + Double.toString(Math.round(d.getYval())) 
-						+ ',' + Integer.toString(d.getCount()/2) + ";";
+						+ ',' + Integer.toString(d.getCount()-1) + ";";
 			}
 			//fileString.replaceAll("\\[^a-zA-Z0-9:.,]", "");
 			outStream.writeUTF(fileString);

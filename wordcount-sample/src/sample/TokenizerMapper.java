@@ -19,7 +19,6 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, Data>{
 		StringTokenizer itr = new StringTokenizer(value.toString());
 
 		/*****************************GET THE FOLLOWER AND FRIEND COUNT OF THE NEW TWEET*******************************************/
-		//int index = 0;
 		while (itr.hasMoreTokens()) {
 			word.set(itr.nextToken());
 			String s = word.toString();
@@ -56,9 +55,9 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, Data>{
 			}
 
 			/*************************EMIT**************************************/			
-			word.set(":" + tweet.getCluster_id() + ":" + tweet.getXval() + ":" + tweet.getYval() + ":");
+			word.set(Integer.toString(tweet.getCluster_id()));
 			data.setXval(tweet.getXval());
-			data.setYval(data.getYval());
+			data.setYval(tweet.getYval());
 			data.setCount(1);
 			data.setCluster_id(tweet.getCluster_id());
 			context.write(word, data);
