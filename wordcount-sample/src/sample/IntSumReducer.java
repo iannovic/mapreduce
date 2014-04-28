@@ -18,9 +18,12 @@ extends Reducer<Text,Node,Text,IntWritable> {
 		Node m = null;
 		
 		for (Node d : values) {
+			System.out.println("checking node");
 			if (d.isIs_node()) {
+				System.out.println("it's a boy!!!!!!!!");
 				m = d;
 			} else if (d.getDistance() < distanceMin) {
+				System.out.println("its a girl :*(");
 				distanceMin = d.getDistance();
 			}
 		}
@@ -28,6 +31,7 @@ extends Reducer<Text,Node,Text,IntWritable> {
 		if (m != null) {
 			m.setDistance(distanceMin);
 			result.set(m.getDistance());
+			System.err.println(m.toString());
 			word.set(m.toString());
 			context.write(word,result);
 		}

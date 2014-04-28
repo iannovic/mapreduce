@@ -12,15 +12,22 @@ public class Node implements Writable{
 	private int id;
 	private boolean is_node;
 	private int distance;
-	private ArrayList<Integer> list = new ArrayList();
+	private ArrayList<Integer> list = new ArrayList<Integer>();
 	@Override
 	public void readFields(DataInput arg0) throws IOException {
 		id = arg0.readInt();
 		distance = arg0.readInt();
+		is_node = arg0.readBoolean();
 		String s = arg0.readLine();
+		//System.out.println("Your line is :");
+		//System.out.println("[" + s + "]");
 		String ints[] = s.split("[:]");
+		list = new ArrayList<Integer>();
 		for (String i : ints) {
-			list.add(Integer.parseInt(i));
+			i = i.trim();
+			if (!i.equals("") && i.matches("[0-9]+$")) {
+				list.add(Integer.parseInt(i));
+			}
 		}
 		
 	}
@@ -38,8 +45,9 @@ public class Node implements Writable{
 	}
 	@Override
 	public void write(DataOutput arg0) throws IOException {
-		arg0.writeInt(0);
-		arg0.write(distance);
+		arg0.writeInt(id);
+		arg0.writeInt(distance);
+		arg0.writeBoolean(is_node);
 		String s = "";
 		for (int i = 0; i < list.size();i++) {
 			s = s + list.get(i) + ":";

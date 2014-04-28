@@ -34,17 +34,13 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, Node>{
 			System.out.println(nodeId);
 			String distance = "";
 			String adj = "";
-			if (nodeId.matches("[^:]")) {
 				if (itr.hasMoreTokens()) {
 					distance = itr.nextToken().toString().trim();
 					System.out.println(distance);
+				if (itr.hasMoreTokens()) {
+						adj = itr.nextToken().toString();
+						System.out.println(adj);
 				}
-				if (distance.matches("[^:]")) {
-					if (itr.hasMoreTokens()) {
-							adj = itr.nextToken().toString();
-							System.out.println(adj);
-					}
-				}	
 			}
 			
 			//emit (nid n, N);
