@@ -19,8 +19,6 @@ public class Node implements Writable{
 		distance = arg0.readInt();
 		is_node = arg0.readBoolean();
 		String s = arg0.readLine();
-		//System.out.println("Your line is :");
-		//System.out.println("[" + s + "]");
 		String ints[] = s.split("[:]");
 		list = new ArrayList<Integer>();
 		for (String i : ints) {

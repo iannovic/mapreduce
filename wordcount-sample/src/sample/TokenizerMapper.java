@@ -2,6 +2,7 @@ package sample;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.IntWritable;
@@ -27,41 +28,64 @@ public class TokenizerMapper extends Mapper<Object, Text, Text, Node>{
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		
 		StringTokenizer itr = new StringTokenizer(value.toString());
-		
-		while (itr.hasMoreTokens()) {
-			word.set(itr.nextToken());
-			String nodeId = word.toString();
-			System.out.println(nodeId);
-			String distance = "";
-			String adj = "";
-				if (itr.hasMoreTokens()) {
-					distance = itr.nextToken().toString().trim();
-					System.out.println(distance);
-				if (itr.hasMoreTokens()) {
-						adj = itr.nextToken().toString();
-						System.out.println(adj);
+		if (GlobalNodes.is_first_iteration) {
+			while (itr.hasMoreTokens()) {
+				word.set(itr.nextToken());
+				String nodeId = word.toString();
+				System.out.println(nodeId);
+				String distance = "";
+				String adj = "";
+					if (itr.hasMoreTokens()) {
+						distance = itr.nextToken().toString().trim();
+						System.out.println(distance);
+					if (itr.hasMoreTokens()) {
+							adj = itr.nextToken().toString();
+							System.out.println(adj);
+					}
 				}
-			}
-			
-			//emit (nid n, N);
-			String adj_list[] = adj.split("[:]");
-			ArrayList<Integer> list = new ArrayList<Integer>();
-			for (String s : adj_list) {
-				list.add(Integer.parseInt(s.trim()));
-			}
-			node.setId(Integer.parseInt(nodeId));
-			node.setIs_node(true);
-			node.setDistance(Integer.parseInt(distance));
-			node.setList(list);
-			context.write(word, node);
-			
-			/*for all nodeid m existing in adj list ... emit */
-			node.setIs_node(false);
-			node.setDistance(node.getDistance()+1);
-			for (int i = 0; i < list.size(); i ++){
-				node.setId(list.get(i));
-				word.set(list.get(i).toString());
+				
+				//emit (nid n, N);
+				String adj_list[] = adj.split("[:]");
+				ArrayList<Integer> list = new ArrayList<Integer>();
+				for (String s : adj_list) {
+					list.add(Integer.parseInt(s.trim()));
+				}
+				node.setId(Integer.parseInt(nodeId));
+				node.setIs_node(true);
+				node.setDistance(Integer.parseInt(distance));
+				node.setList(list);
 				context.write(word, node);
+				
+				/*for all nodeid m existing in adj list ... emit */
+				node.setIs_node(false);
+				node.setDistance(node.getDistance()+1);
+				for (int i = 0; i < list.size(); i ++){
+					node.setId(list.get(i));
+					word.set(list.get(i).toString());
+					context.write(word, node);
+				}
+			} 
+		}
+		//let the hacker games begin
+		else {
+			LinkedList<Node> list = GlobalNodes.nodes;
+			for (int i = 0; i < list.size(); i++) {
+				Node n = list.get(i);
+						
+				node.setId(n.getId());
+				node.setIs_node(true);
+				node.setDistance(n.getDistance());
+				node.setList(n.getList());
+				context.write(word, node);
+				ArrayList<Integer> adj_list = n.getList();
+				/*for all nodeid m existing in adj list ... emit */
+				node.setIs_node(false);
+				node.setDistance(node.getDistance()+1);
+				for (int j = 0; j < adj_list.size(); j++){
+					node.setId(adj_list.get(j));
+					word.set(adj_list.get(j).toString());
+					context.write(word, node);
+				}
 			}
 		}
 	}

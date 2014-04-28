@@ -1,11 +1,11 @@
 package sample;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -31,18 +31,25 @@ public class WordCount {
 		 * If it exists, delete it:
 		 */
 		deleteFolder(conf,outputPath);
+		int n = 10;
+		LinkedList<Node> global = new LinkedList<Node>();
+		GlobalNodes.nodes = global;
 		
-		Job job = Job.getInstance(conf);
-
-		job.setJarByClass(WordCount.class);
-		job.setMapperClass(TokenizerMapper.class);
-		//job.setCombinerClass(IntSumReducer.class);
-		job.setReducerClass(IntSumReducer.class);
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(Node.class);
-		FileInputFormat.addInputPath(job, new Path(inputPath));
-		FileOutputFormat.setOutputPath(job, new Path(outputPath));
-		System.exit(job.waitForCompletion(true) ? 0 : 1);
+		for (int i = 0; i < n; i ++) {
+			GlobalNodes.has_changed = false;
+			Job job = Job.getInstance(conf);
+			job.setJarByClass(WordCount.class);
+			job.setMapperClass(TokenizerMapper.class);
+			job.setReducerClass(IntSumReducer.class);
+			job.setOutputKeyClass(Text.class);
+			job.setOutputValueClass(Node.class);
+			FileInputFormat.addInputPath(job, new Path(inputPath));
+			FileOutputFormat.setOutputPath(job, new Path(outputPath));
+			job.waitForCompletion(true);
+			GlobalNodes.is_first_iteration = false;
+		}
+		System.out.println("has_changed :" + GlobalNodes.has_changed); // false will indicate that it is no longer changing and complete.
+		System.exit(0);
 	}
 	
 	/**
