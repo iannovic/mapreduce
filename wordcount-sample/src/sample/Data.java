@@ -1,6 +1,12 @@
 package sample;
 
-public class Data {
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import org.apache.hadoop.io.Writable;
+
+public class Data implements Writable{
 	
 	private int cluster_id;
 	private int count;
@@ -47,5 +53,22 @@ public class Data {
 		String ret;
 		ret = this.getCluster_id() + ":" + this.getXval() + ":" + this.getYval() + ":" + this.getCount();
 		return ret;
+	}
+
+	@Override
+	public void readFields(DataInput arg0) throws IOException {
+		cluster_id = arg0.readInt();
+		count = arg0.readInt();
+		xval = arg0.readDouble();
+		yval = arg0.readDouble();
+	}
+
+	@Override
+	public void write(DataOutput arg0) throws IOException {
+		arg0.writeInt(cluster_id);
+		arg0.writeInt(count);
+		arg0.writeDouble(xval);
+		arg0.writeDouble(yval);
+		
 	}
 }

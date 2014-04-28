@@ -22,7 +22,9 @@ extends Reducer<Text,IntWritable,Text,IntWritable> {
 		//variables for centroid
 		Data center = Global.centroid_list.get(tweet.getCluster_id());
 	/*******************************************DO DA MATH*******************************************/
-		
+		while (values.iterator().hasNext()) {
+			System.out.println(values.iterator().next().toString());
+		}
 
 		center.setCount(center.getCount()+1);
 		center.setXval(center.getXval() * (center.getCount()-1) + tweet.getXval());
