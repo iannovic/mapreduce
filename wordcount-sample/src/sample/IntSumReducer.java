@@ -18,20 +18,30 @@ extends Reducer<Text,Node,Text,IntWritable> {
 		Node m = null;
 		
 		for (Node d : values) {
-			System.out.println("checking node");
+			System.out.println("distance is :" + d.getDistance());
+			
+			
 			if (d.isIs_node()) {
-				System.out.println("it's a boy!!!!!!!!");
-				m = d;
+				System.out.println(key.toString() +" it's a boy!!!!!!!!");
+				m = new Node();
+				m.setDistance(d.getDistance());
+				m.setId(d.getId());
+				m.setList(d.getList());
+				m.setIs_node(d.isIs_node());
+				
 			} else if (d.getDistance() < distanceMin) {
-				System.out.println("its a girl :*(");
-				distanceMin = d.getDistance();
+				System.out.println(key.toString() + " its a girl :*(");
+				if (m != null) {
+					if (m.getDistance() > d.getDistance())
+							distanceMin = d.getDistance();
+				}
 			}
 		}
 		
 		if (m != null) {
 			m.setDistance(distanceMin);
 			result.set(m.getDistance());
-			System.err.println(m.toString());
+			System.err.println("Emiting this node->" + m.toString());
 			word.set(m.toString());
 			context.write(word,result);
 		}
