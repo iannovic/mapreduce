@@ -1,116 +1,76 @@
 package sample;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.retry.RetryPolicies.MultipleLinearRandomRetry.Pair;
 import org.apache.hadoop.mapreduce.Mapper;
 
-
-
-
-public class TokenizerMapper extends Mapper<Object, Text, TextPair, IntWritable>{
+public class TokenizerMapper extends Mapper<Object, Text, Text, Data>{
 
 	private final static IntWritable one = new IntWritable(1);
 	private Text word = new Text();
-	private final int WORD = 0;
-	private final int HASH = 1;
-	private final int MENTION =2;
+	private Data data = new Data();
+	private CentroidHelper centroid_helper = new CentroidHelper();
+	
+
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		StringTokenizer itr = new StringTokenizer(value.toString());
-		int mode = 0;
-		ArrayList<String> wordList = new ArrayList<String>();
-		int c = 0;
-		whileLoop:
+
+		/*****************************GET THE FOLLOWER AND FRIEND COUNT OF THE NEW TWEET*******************************************/
+		//int index = 0;
 		while (itr.hasMoreTokens()) {
 			word.set(itr.nextToken());
 			String s = word.toString();
-				switch(c){
-				case(0):
-					if(s.equals("Sun") || s.equals("Mon") || s.equals("Tue")
-							|| s.equals("Wed") || s.equals("Thu") || s.equals("Fri")
-							|| s.equals("Sat")){
-						c = 1;
-					}
-				break;
-				case(1):
-					if(s.equals("Apr")){
-						c++;
-					}else{
-						if(s.equals("Sun") || s.equals("Mon") || s.equals("Tue")
-								|| s.equals("Wed") || s.equals("Thu") || s.equals("Fri")
-								|| s.equals("Sat")){
-							c = 1;
-						}else{c=0;}
-					}
-				break;
-				case(2):
-					if(s.contains("0") || s.contains("1") || s.contains("2") || s.contains("3")){
-						c = 0;
-						for(int i = 0; i < 2; i++){wordList.remove(wordList.size() - 1);}
-						for(int i = 0; i < 5; i++){
-							if(itr.hasMoreTokens()){
-								itr.nextToken();
-							}else{break whileLoop;}
-						}
-						write(wordList, context);
-						wordList.clear();
-					}else{
-						if(s.equals("Sun") || s.equals("Mon") || s.equals("Tue")
-								|| s.equals("Wed") || s.equals("Thu") || s.equals("Fri")
-								|| s.equals("Sat")){
-							c = 1;
-						}else{c=0;}
-					}
-				break;
-				default:
-				break;
+			Data tweet = new Data();
+			String keys[] = s.split("[,;]");
+			
+			if (keys.length == 2) {
+				Double d = Double.parseDouble(keys[0]);
+				tweet.setXval(d);
+				d = Double.parseDouble(keys[1]);
+				tweet.setYval(d);
 			}
-			switch(mode){
-				case(WORD):
-					if (s.charAt(0) == '@' || s.charAt(0) == '#' || s.contains("http")) {
-					} else {
-						s = s.replaceAll("[-0-9.:;\n\t\r#@, +?/!$&)(\"]*", "").toLowerCase().trim();	
-						if(s != "" && s != null){wordList.add(s);}
-					}
-				break;
-				case(HASH):
-					if (s.charAt(0) == '#'){
-						wordList.add(s);
-					}
-					break;
-				case(MENTION):
-					if (s.charAt(0) == 'a'){
-						wordList.add(s);
-					}
-					break;
-				default:
-					break;
-				}	
-		}
-		write(wordList, context);
-	}
-	
-	private void write(ArrayList<String> wordList, Context context) {
 		
-		for(int i = 0; i < wordList.size() - 1; i++){
-			for(int j = 0; j < wordList.size() - 1; j++){
-				if(!(i==j) && wordList.get(i) != null && wordList.get(j) != null && wordList.get(i) != "" && wordList.get(j) != ""){
-					String first = wordList.get(i);
-					String second = wordList.get(j);
-					try {
-						context.write(new TextPair(first,second), one);
-						context.write(new TextPair(first,"*"), one);
-					} catch (IOException | InterruptedException e) {
-						e.printStackTrace();
-					}
+			/*****************FIND THE DISTANCE TO ALL CENTROIDS AND PICK BEST CENTER*****************************/
+			//read from file into the String "centers"
+			//File Written in the format: "a:xval,yval,coutn;b:xval,yval;c:xval,yval,count;........"
+
+			//Shortest Distance
+			double sd = 1000000000;
+			double newDistance = 1000000000;
+
+			if (Global.centroid_list == null) {
+				Global.centroid_list = centroid_helper.populateCentroids();
+			}
+			
+			//In this loop we get all of the centers from the "centers" string and see if each one is a better match
+			for (int i = 0; i < Global.centroid_list.size(); i ++) {
+				Data center = Global.centroid_list.get(i);
+				newDistance = getDistance(tweet.getXval(),tweet.getYval(),center.getXval(),center.getYval());
+				if(newDistance < sd){
+					sd = newDistance;
+					tweet.setCluster_id(center.getCluster_id());
 				}
 			}
+
+			/*************************EMIT**************************************/			
+			word.set(":" + tweet.getCluster_id() + ":" + tweet.getXval() + ":" + tweet.getYval() + ":");
+			data.setXval(tweet.getXval());
+			data.setYval(data.getYval());
+			data.setCount(1);
+			data.setCluster_id(tweet.getCluster_id());
+			context.write(word, data);
 		}
+
+	}
+	public double getDistance(double xValOne, double yValOne, double xValTwo, double yValTwo){
+		double xDist = Math.abs(xValOne - xValTwo);
+		double yDist = Math.abs(yValOne - yValTwo);
+		xDist = xDist*xDist;
+		yDist = yDist*yDist;
+		return Math.sqrt(xDist+yDist);
 	}
 }
-
 

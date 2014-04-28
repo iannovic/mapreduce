@@ -1,6 +1,7 @@
 package sample;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -23,6 +24,11 @@ public class WordCount {
 
 		LOG.info("HDFS Root Path: {}", conf.get("fs.defaultFS"));
 		LOG.info("MR Framework: {}", conf.get("mapreduce.framework.name"));
+		
+		/*need this to set the number of reducers to one for k-means*/
+		conf.set("mapred.reduce.tasks","1");
+		conf.set("mapred.tasktracker.map.tasks.maximum", "1");
+		
 		/* Set the Input/Output Paths on HDFS */
 		String inputPath = "/input";
 		String outputPath = "/output";
@@ -31,17 +37,42 @@ public class WordCount {
 		 * If it exists, delete it:
 		 */
 		
-		Job job = Job.getInstance(conf);
-		job.setPartitionerClass(PairPartitioner.class);
-		job.setJarByClass(WordCount.class);
-		job.setMapperClass(TokenizerMapper.class);
-		job.setCombinerClass(IntSumReducer.class);
-		job.setReducerClass(IntSumReducer.class);
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(IntWritable.class);
-		FileInputFormat.addInputPath(job, new Path(inputPath));
-		FileOutputFormat.setOutputPath(job, new Path(outputPath));
-		System.exit(job.waitForCompletion(true) ? 0 : 1);
+		//n determines the number of iterations for mapreduce kmeans
+		int n = 1;
+		
+		FileSystem fs = FileSystem.get(conf);
+		Path p = new Path("/data/centroids");
+		CentroidHelper ch = new CentroidHelper();
+		Global.fs = fs;
+		Global.p = p;
+		
+		fs.delete(p, true);
+		deleteFolder(conf,outputPath);
+		
+		for (int i = 0; i < n; i++) {
+			
+			LinkedList<Data> list = ch.populateCentroids();
+			Global.centroid_list = list;
+			
+			if (fs.exists(Global.p)) {
+				fs.delete(p,true);
+			}
+			
+			deleteFolder(conf,outputPath);
+			Job job = Job.getInstance(conf);
+			job.setNumReduceTasks(1);
+			job.setJarByClass(WordCount.class);
+			job.setMapperClass(TokenizerMapper.class);
+			//job.setCombinerClass(IntSumReducer.class);
+			job.setReducerClass(IntSumReducer.class);
+			job.setOutputKeyClass(Text.class);
+			job.setOutputValueClass(Data.class);
+			FileInputFormat.addInputPath(job, new Path(inputPath));
+			FileOutputFormat.setOutputPath(job, new Path(outputPath));
+			job.waitForCompletion(true);
+			ch.writeToFile(Global.centroid_list);
+		}
+		System.exit(0);
 	}
 	
 	/**
